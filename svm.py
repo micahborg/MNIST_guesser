@@ -1,3 +1,7 @@
+#
+# Code from https://github.com/AbirHaque/MATH582KernelGroup/blob/main/svm.py
+#
+
 import numpy as np
 import pandas as pd
 import rbf_kernel as rbf
@@ -13,7 +17,7 @@ class SVM:
     def __init__( self, C = 0.1 ):
         self.C = C
         
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame):
+    def fit(self, X: np.array, y: np.array):
         Y = y.to_numpy()
         N, m = X.shape
 
@@ -22,12 +26,12 @@ class SVM:
             for j in range( N ):
                 K[ i, j ] = calculate_kernel( X = X[ i, : ], y = X[ j, : ], sigma = 1 )
 
-        P = matrix( Y @ K @ Y )
-        q = matrix( np.ones( ( N,1 ) ) * -1 )
+        P = matrix( Y @ K @ Y ) # check for small eiganvalue for kernel optimization
+        q = matrix( np.ones( ( N,1 ) ) * -1 ) # negative ones
         G = matrix( np.vstack( ( y.T,
                               -1 * y.T,
                               -1 * np.eye( N ),
-                              np.eye( N ) ) ) )
+                              np.eye( N ) ) ) ) # stack the matrices vertically
         h = matrix( np.vstack( ( np.zeros( ( N + 2, 1 ) ),
                               self.C * np.ones( ( N, 1 ) ) ) ) )
         
