@@ -12,7 +12,6 @@ import sys
 def mouse_input():
     """
     Getting the mouse input
-    :return: cursor position  bbbbbb
     """
     is_clicked = pygame.mouse.get_pressed(num_buttons=5)
     mouse_pos = pygame.mouse.get_pos()
