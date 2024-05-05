@@ -1,12 +1,13 @@
 import pickle
 import pygame
-from scale_data import ScaleData
+from scale_window import ScaleWindow
 import numpy as np
-import pandas as pd
 import pickle
-from tkinter import messagebox
-from tkinter import *
+from tkinter import Tk, messagebox
 import sys
+
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
 
 def mouse_input():
@@ -24,6 +25,7 @@ class MnistGui:
         pygame.init()
         pygame.display.set_caption("Number Guesser")
         self.svm = pickle.load(open('svm_model.pkl', 'rb'))
+        self.scaler = pickle.load(open('standardize_model.pkl', 'rb'))
         self.width = self.height = 500
         self.bg_color = (255, 255, 255)
         self.screen = pygame.display.set_mode((self.width, self.height))
@@ -44,20 +46,23 @@ class MnistGui:
                     sys.exit(0)
                 if event.type == pygame.KEYDOWN:
                     try:
-                        scaled_data = np.array([ScaleData(self.cursor_pos, thick_x=self.thickness_x,
-                                                             thick_y=self.thickness_y).scale_img_data()]) 
-                        print(scaled_data.shape)
-                    
+                        scaled_window = np.array([ScaleWindow(self.cursor_pos, thick_x=self.thickness_x, thick_y=self.thickness_y).scale_img_window()]).reshape(1, -1)
+                        print(scaled_window.shape)
+
                         print("Loading the model...")
-                        n_sample, nx, ny = scaled_data.shape
-                        scaled_data = scaled_data.reshape((n_sample, nx * ny))
-                        column_names = [f"pixel_{i}" for i in range(scaled_data.shape[1])]
-                        df = pd.DataFrame(scaled_data, columns=column_names)
-                        print(df)
+
+                        user_data_scaled = self.scaler.transform(scaled_window) # replaced the original train with the rescaled version
+
+                        plt.imshow(user_data_scaled.reshape(28, 28), cmap='gray') # in a 28 x 28 grid
+                        plt.show()
+
+                        user_data_scaled.reshape(1, -1)
+
                         model = self.svm
-                        prediction = model.predict(df)
+                        prediction = model.predict(user_data_scaled)
                         messagebox.showinfo("Prediction", f"I think this number is {prediction[0]}")
-                    except Exception:
+                    except Exception as e:
+                        print("Error:", e)
                         messagebox.showerror("Error", "Number cannot be matched. Please try again")
                     self.root.quit()
                     self.cursor_pos.clear()
@@ -73,11 +78,10 @@ class MnistGui:
         try:
             color = (0, 0, 0)
             for cursor_pos in self.cursor_pos:
-                pygame.draw.rect(self.screen, color,
-                                 pygame.Rect(cursor_pos[0], cursor_pos[1], self.thickness_x, self.thickness_y))
+                pygame.draw.rect(self.screen, color, pygame.Rect(cursor_pos[0], cursor_pos[1], self.thickness_x, self.thickness_y))
             pygame.display.update()
         except Exception as e:
-            print(e)
+            print("Error:", e)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import numpy
 
 
-class ScaleData:
+class ScaleWindow:
     def __init__(self, mouse_pos, thick_x, thick_y):
         self.mouse_pos = mouse_pos
         self.width = 28
@@ -11,9 +11,9 @@ class ScaleData:
         self.thick_x = thick_x
         self.thick_y = thick_y
 
-    def scale_img_data(self):
+    def scale_img_window(self):
         """
-        Scale the image at 28 by 28px
+        Scale the image at 28 by 28 px
         """
         scale_grid = []
         scale_grid_row = []
