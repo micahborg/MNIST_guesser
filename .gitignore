@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# the model itself
+svm_model.pkl
+nn_model.pkl
+
 # C extensions
 *.so
 

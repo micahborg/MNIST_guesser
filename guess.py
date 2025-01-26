@@ -24,8 +24,9 @@ class MnistGui:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Number Guesser")
-        self.svm = pickle.load(open('svm_model.pkl', 'rb'))
-        self.scaler = pickle.load(open('standardize_model.pkl', 'rb'))
+        self.nn = pickle.load(open('nn_model.pkl', 'rb'))
+        #self.svm = pickle.load(open('svm_model.pkl', 'rb'))
+        #self.scaler = pickle.load(open('standardize_model.pkl', 'rb'))
         self.width = self.height = 500
         self.bg_color = (255, 255, 255)
         self.screen = pygame.display.set_mode((self.width, self.height))
@@ -51,16 +52,17 @@ class MnistGui:
 
                         print("Loading the model...")
 
-                        user_data_scaled = self.scaler.transform(scaled_window) # replaced the original train with the rescaled version
+                        #user_data_scaled = self.scaler.transform(scaled_window) # replaced the original train with the rescaled version
 
-                        plt.imshow(user_data_scaled.reshape(28, 28), cmap='gray') # in a 28 x 28 grid
-                        plt.show()
+                        #plt.imshow(scaled_window.reshape(28, 28), cmap='gray') # in a 28 x 28 grid
+                        #plt.show()
 
-                        user_data_scaled.reshape(1, -1)
+                        user_data_scaled = scaled_window.reshape((1, 28*28))
+                        #user_data_scaled.reshape(1, -1)
 
-                        model = self.svm
+                        model = self.nn
                         prediction = model.predict(user_data_scaled)
-                        messagebox.showinfo("Prediction", f"I think this number is {prediction[0]}")
+                        messagebox.showinfo("Prediction", f"I think this number is {prediction.argmax()}")
                     except Exception as e:
                         print("Error:", e)
                         messagebox.showerror("Error", "Number cannot be matched. Please try again")
